@@ -465,6 +465,9 @@ def server(event_loop, aiohttp_client):
 		async def local_block_at(self, request):
 			return await self._process(request, CHAIN_BLOCK_1)
 
+		async def block_at_public(self, request):
+			return await self._process(request, CHAIN_BLOCK_1)
+
 		async def _process(self, request, response_body):
 			self.urls.append(str(request.url))
 			return web.Response(body=json.dumps(response_body), headers={'Content-Type': 'application/json'})
@@ -481,6 +484,7 @@ def server(event_loop, aiohttp_client):
 	app.router.add_get('/account/get/forwarded', mock_server.account_info_forwarded)
 	app.router.add_post('/local/chain/blocks-after', mock_server.local_chain_blocks_after)
 	app.router.add_post('/local/block/at', mock_server.local_block_at)
+	app.router.add_post('/block/at/public', mock_server.block_at_public)
 
 	server = event_loop.run_until_complete(aiohttp_client(app))  # pylint: disable=redefined-outer-name
 
@@ -650,7 +654,7 @@ async def test_can_query_account_info_without_public_key(server):  # pylint: dis
 # endregion
 
 
-# region local chain blocks after
+# region POST (get_blocks_after)
 
 EXPECTED_BLOCK_2 = Block(
 	2,
@@ -772,7 +776,7 @@ EXPECTED_BLOCK_2 = Block(
 				None,
 				150000000000,
 				'NBUH72UCGBIB64VYTAAJ7QITJ62BLISFFQOHVP65',
-				{},
+				None,
 				None
 			),
 			'edcc8d1c48165f5b771087fbe3c4b4d41f5f8f6c4ce715e050b86fb4e7fdeb64'
@@ -784,11 +788,12 @@ EXPECTED_BLOCK_2 = Block(
 	(
 		'fdf6a9830e9320af79123f467fcb03d6beab735575ff50eab363d812c5581436'
 		'2ad7be0503db2ee70e60ac3408d83cdbcbd941067a6df703e0c21c7bf389f105'
-	)
+	),
+	5548
 )
 
 
-async def can_query_blocks_after(server):  # pylint: disable=redefined-outer-name
+async def test_can_query_blocks_after(server):  # pylint: disable=redefined-outer-name
 	# Arrange:
 	connector = NemConnector(server.make_url(''))
 
@@ -796,7 +801,11 @@ async def can_query_blocks_after(server):  # pylint: disable=redefined-outer-nam
 	blocks = await connector.get_blocks_after(1)
 
 	# Assert:
-	assert [f'{server.make_url("")}/local/chain/blocks-after'] == server.mock.urls
+	assert [
+		f'{server.make_url("")}/local/chain/blocks-after',
+		f'{server.make_url("")}/block/at/public',
+		f'{server.make_url("")}/block/at/public'
+	] == server.mock.urls
 	assert 2 == len(blocks)
 	assert EXPECTED_BLOCK_2 == blocks[0]
 	assert Block(
@@ -809,13 +818,14 @@ async def can_query_blocks_after(server):  # pylint: disable=redefined-outer-nam
 		(
 			'919ae66a34119b49812b335827b357f86884ab08b628029fd6e8db3572faeb4f'
 			'323a7bf9488c76ef8faa5b513036bbcce2d949ba3e41086d95a54c0007403c0b'
-		)
+		),
+		5548
 	) == blocks[1]
 
 # endregion
 
 
-# region local block at public
+# region POST (get_block)
 
 async def test_can_query_block_at(server):  # pylint: disable=redefined-outer-name
 	# Arrange:
@@ -825,7 +835,23 @@ async def test_can_query_block_at(server):  # pylint: disable=redefined-outer-na
 	block = await connector.get_block(2)
 
 	# Assert:
-	assert [f'{server.make_url("")}/local/block/at'] == server.mock.urls
+	assert [f'{server.make_url("")}/local/block/at', f'{server.make_url("")}/block/at/public'] == server.mock.urls
 	assert EXPECTED_BLOCK_2 == block
+
+# endregion
+
+
+# region POST (get_block_size)
+
+async def test_can_query_block_size(server):  # pylint: disable=redefined-outer-name
+	# Arrange:
+	connector = NemConnector(server.make_url(''))
+
+	# Act:
+	block_size = await connector.get_block_size(2)
+
+	# Assert:
+	assert [f'{server.make_url("")}/block/at/public'] == server.mock.urls
+	assert 5548 == block_size
 
 # endregion
