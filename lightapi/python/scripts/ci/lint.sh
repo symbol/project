@@ -1,1 +1,5 @@
-../../../../linters/python/lint.sh
+#!/bin/bash
+
+set -ex
+
+"$(git rev-parse --show-toplevel)/linters/python/lint.sh"

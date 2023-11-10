@@ -13,5 +13,5 @@ if [ "$(uname -o)" = "Msys" ]; then
 	echo "Recreating symlinks to jenkins and linters"
 	rm jenkins linters
 	ln -s _symbol/jenkins jenkins
-    ln -s _symbol/linters linters
+	ln -s _symbol/linters linters
 fi
