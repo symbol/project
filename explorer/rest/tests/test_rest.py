@@ -7,22 +7,9 @@ import testing.postgresql
 
 from rest import create_app
 
-from .test.DatabaseTestUtils import BLOCK_VIEWS, NAMESPACE_VIEWS, DatabaseConfig, initialize_database
+from .test.DatabaseTestUtils import BLOCK_VIEWS, MOSAIC_VIEWS, NAMESPACE_VIEWS, DatabaseConfig, initialize_database
 
 DATABASE_CONFIG_INI = 'db_config.ini'
-
-# region test data
-
-EXPECTED_BLOCK_VIEW_1 = BLOCK_VIEWS[0]
-
-EXPECTED_BLOCK_VIEW_2 = BLOCK_VIEWS[1]
-
-EXPECTED_NAMESPACE_VIEW_1 = NAMESPACE_VIEWS[0]
-
-EXPECTED_NAMESPACE_VIEW_2 = NAMESPACE_VIEWS[1]
-
-
-# endregion
 
 # region fixtures
 
@@ -90,7 +77,7 @@ def _assert_get_api_nem_block_by_height(client, height, expected_status_code, ex
 
 
 def test_api_nem_block_by_height(client):  # pylint: disable=redefined-outer-name
-	_assert_get_api_nem_block_by_height(client, 1, 200, EXPECTED_BLOCK_VIEW_1.to_dict())
+	_assert_get_api_nem_block_by_height(client, 1, 200, BLOCK_VIEWS[0].to_dict())
 
 
 def test_api_nem_block_non_exist(client):  # pylint: disable=redefined-outer-name
@@ -143,15 +130,15 @@ def test_api_nem_blocks_without_params(client):  # pylint: disable=redefined-out
 
 	# Assert:
 	_assert_status_code_and_headers(response, 200)
-	assert [EXPECTED_BLOCK_VIEW_2.to_dict(), EXPECTED_BLOCK_VIEW_1.to_dict()] == response.json
+	assert [BLOCK_VIEWS[1].to_dict(), BLOCK_VIEWS[0].to_dict()] == response.json
 
 
 def test_api_nem_blocks_applies_limit(client):  # pylint: disable=redefined-outer-name
-	_assert_get_api_nem_blocks(client, 200, [EXPECTED_BLOCK_VIEW_2.to_dict()], limit=1)
+	_assert_get_api_nem_blocks(client, 200, [BLOCK_VIEWS[1].to_dict()], limit=1)
 
 
 def test_api_nem_blocks_applies_offset(client):  # pylint: disable=redefined-outer-name
-	_assert_get_api_nem_blocks(client, 200, [EXPECTED_BLOCK_VIEW_1.to_dict()], offset=1)
+	_assert_get_api_nem_blocks(client, 200, [BLOCK_VIEWS[0].to_dict()], offset=1)
 
 
 def test_api_nem_blocks_applies_min_height(client):  # pylint: disable=redefined-outer-name, invalid-name
@@ -159,15 +146,15 @@ def test_api_nem_blocks_applies_min_height(client):  # pylint: disable=redefined
 
 
 def test_api_nem_blocks_applies_sorted_by_height_desc(client):  # pylint: disable=redefined-outer-name, invalid-name
-	_assert_get_api_nem_blocks(client, 200, [EXPECTED_BLOCK_VIEW_2.to_dict(), EXPECTED_BLOCK_VIEW_1.to_dict()], sort='desc')
+	_assert_get_api_nem_blocks(client, 200, [BLOCK_VIEWS[1].to_dict(), BLOCK_VIEWS[0].to_dict()], sort='desc')
 
 
 def test_api_nem_blocks_applies_sorted_by_height_asc(client):  # pylint: disable=redefined-outer-name, invalid-name
-	_assert_get_api_nem_blocks(client, 200, [EXPECTED_BLOCK_VIEW_1.to_dict(), EXPECTED_BLOCK_VIEW_2.to_dict()], sort='asc')
+	_assert_get_api_nem_blocks(client, 200, [BLOCK_VIEWS[0].to_dict(), BLOCK_VIEWS[1].to_dict()], sort='asc')
 
 
 def test_api_nem_blocks_with_all_params(client):  # pylint: disable=redefined-outer-name
-	_assert_get_api_nem_blocks(client, 200, [EXPECTED_BLOCK_VIEW_2.to_dict()], limit=1, offset=1, min_height=1, sort='asc')
+	_assert_get_api_nem_blocks(client, 200, [BLOCK_VIEWS[1].to_dict()], limit=1, offset=1, min_height=1, sort='asc')
 
 
 def test_api_nem_blocks_invalid_min_height(client):  # pylint: disable=redefined-outer-name, invalid-name
@@ -205,7 +192,7 @@ def _assert_get_api_nem_namespace_by_name(client, name, expected_status_code, ex
 
 
 def test_api_nem_namespace_by_name(client):  # pylint: disable=redefined-outer-name
-	_assert_get_api_nem_namespace_by_name(client, 'oxford', 200, EXPECTED_NAMESPACE_VIEW_1.to_dict())
+	_assert_get_api_nem_namespace_by_name(client, 'oxford', 200, NAMESPACE_VIEWS[0].to_dict())
 
 
 def test_api_nem_namespace_non_exist(client):  # pylint: disable=redefined-outer-name
@@ -239,27 +226,27 @@ def test_api_nem_namespaces_without_params(client):  # pylint: disable=redefined
 
 	# Assert:
 	_assert_status_code_and_headers(response, 200)
-	assert [EXPECTED_NAMESPACE_VIEW_2.to_dict(), EXPECTED_NAMESPACE_VIEW_1.to_dict()] == response.json
+	assert [NAMESPACE_VIEWS[1].to_dict(), NAMESPACE_VIEWS[0].to_dict()] == response.json
 
 
 def test_api_nem_namespaces_applies_limit(client):  # pylint: disable=redefined-outer-name, invalid-name
-	_assert_get_api_nem_namespaces(client, 200, [EXPECTED_NAMESPACE_VIEW_2.to_dict()], limit=1)
+	_assert_get_api_nem_namespaces(client, 200, [NAMESPACE_VIEWS[1].to_dict()], limit=1)
 
 
 def test_api_nem_namespaces_applies_offset(client):  # pylint: disable=redefined-outer-name, invalid-name
-	_assert_get_api_nem_namespaces(client, 200, [EXPECTED_NAMESPACE_VIEW_1.to_dict()], offset=1)
+	_assert_get_api_nem_namespaces(client, 200, [NAMESPACE_VIEWS[0].to_dict()], offset=1)
 
 
 def test_api_nem_namespaces_applies_sorted_by_id_desc(client):  # pylint: disable=redefined-outer-name, invalid-name
-	_assert_get_api_nem_namespaces(client, 200, [EXPECTED_NAMESPACE_VIEW_2.to_dict(), EXPECTED_NAMESPACE_VIEW_1.to_dict()], sort='desc')
+	_assert_get_api_nem_namespaces(client, 200, [NAMESPACE_VIEWS[1].to_dict(), NAMESPACE_VIEWS[0].to_dict()], sort='desc')
 
 
 def test_api_nem_namespaces_applies_sorted_by_id_asc(client):  # pylint: disable=redefined-outer-name, invalid-name
-	_assert_get_api_nem_namespaces(client, 200, [EXPECTED_NAMESPACE_VIEW_1.to_dict(), EXPECTED_NAMESPACE_VIEW_2.to_dict()], sort='asc')
+	_assert_get_api_nem_namespaces(client, 200, [NAMESPACE_VIEWS[0].to_dict(), NAMESPACE_VIEWS[1].to_dict()], sort='asc')
 
 
 def test_api_nem_namespaces_with_all_params(client):  # pylint: disable=redefined-outer-name, invalid-name
-	_assert_get_api_nem_namespaces(client, 200, [EXPECTED_NAMESPACE_VIEW_2.to_dict()], limit=1, offset=1, sort='asc')
+	_assert_get_api_nem_namespaces(client, 200, [NAMESPACE_VIEWS[1].to_dict()], limit=1, offset=1, sort='asc')
 
 
 def _assert_get_api_nem_namespaces_fail(client, expected_status_code, **query_params):  # pylint: disable=redefined-outer-name
@@ -288,5 +275,29 @@ def test_api_nem_namespaces_invalid_sort(client):  # pylint: disable=redefined-o
 	_assert_get_api_nem_namespaces_fail(client, 400, sort=-1)
 	_assert_get_api_nem_namespaces_fail(client, 400, sort='invalid')
 
+
+# endregion
+
+
+# region /mosaic/<name>
+
+def _assert_get_api_nem_mosaic_by_name(client, name, expected_status_code, expected_result):  # pylint: disable=redefined-outer-name
+	# Act:
+	response = client.get(f'/api/nem/mosaic/{name}')
+
+	# Assert:
+	_assert_status_code_and_headers(response, expected_status_code)
+	assert expected_result == response.json
+
+
+def test_api_nem_mosaic_by_name(client):  # pylint: disable=redefined-outer-name
+	_assert_get_api_nem_mosaic_by_name(client, 'dragon.dragonfly', 200, MOSAIC_VIEWS[0].to_dict())
+
+
+def test_api_nem_mosaic_non_exist(client):  # pylint: disable=redefined-outer-name
+	_assert_get_api_nem_mosaic_by_name(client, 'non_exist_mosaic', 404, {
+		'message': 'Resource not found',
+		'status': 404
+	})
 
 # endregion
