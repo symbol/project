@@ -11,7 +11,7 @@ git submodule update --force --checkout _symbol
 # Windows recreate symlinks to jenkins and linters
 if [ "$(uname -o)" = "Msys" ]; then
 	echo "Recreating symlinks to jenkins and linters"
-	rm jenkins linters
+	rm -rf jenkins linters
 	ln -s _symbol/jenkins jenkins
 	ln -s _symbol/linters linters
 fi

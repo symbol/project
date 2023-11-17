@@ -122,4 +122,4 @@ ffi_builder.cdef('''
 ''')
 
 if '__main__' == __name__:
-	ffi_builder.compile(verbose=True)
+	ffi_builder.compile(tmpdir='build', verbose=True)
