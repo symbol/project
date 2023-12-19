@@ -1,4 +1,5 @@
 import asyncio
+import os
 import ssl
 from binascii import unhexlify
 from pathlib import Path
@@ -67,6 +68,9 @@ def load_server_ssl_context(cert_id):
 	ssl_context.load_cert_chain(
 		certificate_directory / 'node.full.crt.pem',
 		keyfile=certificate_directory / 'node.key.pem')
+	if 'nt' == os.name:
+		os.environ['SSL_CERT_FILE'] = str(certificate_directory / 'node.full.crt.pem')
+
 	return ssl_context
 
 # endregion
