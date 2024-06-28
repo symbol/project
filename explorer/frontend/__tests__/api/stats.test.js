@@ -164,8 +164,8 @@ describe('api/stats', () => {
 			const functionToTest = fetchNodeStats;
 			const args = [];
 			const responseMap = {
-				'https://node.list': nodeListResponse,
-				'https://supernode.stats': supernodeStatisticsResponse
+				'https://nodewatch.backend/nodes': nodeListResponse,
+				'https://supernode.backend/statistics': supernodeStatisticsResponse
 			};
 			const expectedResult = {
 				total: 3,

@@ -101,8 +101,8 @@ export const fetchBlockStats = async () => {
 
 export const fetchNodeStats = async () => {
 	const [nodewatchResponse, supernodeResponse] = await Promise.all([
-		makeRequest(config.NODELIST_URL),
-		makeRequest(config.SUPERNODE_STATS_URL)
+		makeRequest(`${config.NODEWATCH_URL}/nodes`),
+		makeRequest(`${config.SUPERNODE_URL}/statistics`)
 	]);
 
 	return {
